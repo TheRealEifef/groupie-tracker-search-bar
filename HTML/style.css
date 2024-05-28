@@ -1,0 +1,237 @@
+html{
+    background-color: #002e39;
+}
+
+*{
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+body{
+    font-family: Helvetica;
+    -webkit-font-smoothing: antialiased;
+    background: #0099a3;
+}
+h1{
+    text-align: center;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ff8b43;
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.centered-table {
+   /* Optional: Set a maximum width for the table */
+   max-width: 100%;
+}
+
+/* Table Styles */
+
+.table-wrapper {
+    margin: 10px 10px 10px;
+    overflow-x: auto;
+  }
+
+  .fl-table {
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    background-color: white;
+  }
+
+  .fl-table td,
+  .fl-table th {
+    text-align: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+
+.fl-table td {
+    border-right: 1px solid #f8f8f8;
+    font-size: 12px;
+}
+
+.fl-table thead th {
+    color: #ffffff;
+    background: #002e39;
+}
+
+
+.fl-table thead th:nth-child(odd) {
+    color: #ffffff;
+    background: #002e39;
+}
+
+.fl-table tr:nth-child(even) {
+    background: #F8F8F8;
+}
+
+/* Responsive */
+
+@media (max-width: 767px) {
+    .fl-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .table-wrapper:before{
+        content: "Scroll horizontally >";
+        display: block;
+        text-align: right;
+        font-size: 11px;
+        color: white;
+        padding: 0 0 10px;
+    }
+    .fl-table thead, .fl-table tbody, .fl-table thead th {
+        display: block;
+    }
+    .fl-table thead th:last-child{
+        border-bottom: none;
+    }
+    .fl-table thead {
+        float: left;
+    }
+    .fl-table tbody {
+        width: auto;
+        position: relative;
+        overflow-x: auto;
+    }
+    .fl-table td, .fl-table th {
+        
+        height: 60px;
+        vertical-align: middle;
+        box-sizing: border-box;
+        overflow-x: auto;
+        overflow-y: auto;
+        width: 120px;
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .fl-table thead th {
+        text-align: left;
+        border-bottom: 1px solid #f7f7f9;
+    }
+    .fl-table tbody tr {
+        display: table-cell;
+    }
+    .fl-table tbody tr:nth-child(odd) {
+        background: none;
+    }
+    .fl-table tr:nth-child(even) {
+        background: transparent;
+    }
+    .fl-table tr td:nth-child(odd) {
+        background: #F8F8F8;
+        border-right: 1px solid #E6E4E4;
+    }
+    .fl-table tr td:nth-child(even) {
+        border-right: 1px solid #E6E4E4;
+    }
+    .fl-table tbody td {
+        display: block;
+        text-align: center;
+    }
+}
+
+div{
+    background-color: #0099a3;
+    border-radius: 15px;
+    margin: auto;
+    padding: 10px;
+}
+
+img{
+    margin: 10px;
+    border-radius: 10px;
+    width: 150px;
+    height: 150px;
+}
+
+p{
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+    font-size: 20px;
+}
+h4{
+    margin-left:20px;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #ff8b43;
+}
+
+h2{
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #ff8b43;
+    font-size: 20px;
+}
+
+.artist-image:hover{
+    transform: scale(1.2);
+}
+
+.title {
+    text-align: center;
+    font-size: 45px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ff8b43;
+    margin-bottom: -5px;
+}
+
+.imgdiv{
+    float: left;
+    padding-left: 35%;
+}
+
+.content {
+    float: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 35%;
+}
+
+.infoimg{
+    height:max-content;
+    width: max-content;
+}
+
+.bg{
+    width: 200px;
+    height: 200px; 
+}
+p{
+    margin-bottom: 1px;
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust the minmax value as needed */
+    grid-gap: 20px;
+}
+
+.artist-card {
+    background-color: #002e39;
+    height: 250px;
+    text-align: center;
+}
+
+.artist-name {
+    margin-bottom: 10px;
+}
+
+.artist-image {
+    width: 150px; /* Adjust the width as needed */
+    height: 150px;
+    object-fit: cover;
+}

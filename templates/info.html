@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css"  href="../HTML/style.css"/>
+    <title>Groupie</title>
+</head>
+<body>
+    <div class="table-wrapper">
+        <a href="./index.html" class="sideB"><button>Go Back!</button></a>
+        <br>
+        <h1 class="title">{{.Name}}</h1>
+        <div class="table-container">
+            <table class="centered-table">
+                <tr>
+                    <td><img src="{{.Image}}" alt="Artist Image" class="infoimg"></td>
+                    <td>
+                       
+                        <p>Members: <br> {{range .Members}}{{.}} <br> {{end}}</p>
+                        <p>Creation Date: {{.CreationDate}}</p>
+                        <p>First Album: {{.FirstAlbum}}</p>                        
+                    </td>
+                    <td class="padding"></td>
+                </tr>
+            </table>
+        </div> <br>
+        
+        <table class="fl-table">
+                <thead>
+                    <tr>
+                        <th>Locations</th>
+                        <th>Dates</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range $relationKey, $nestedValue := .Relations}}
+                    <tr>
+                        <td>{{$relationKey}}</td>
+                        <td>
+                            {{range $nestedValue}}{{.}} <br> {{end}}
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+        </table>
+    </div>
+</body>
+</html>
