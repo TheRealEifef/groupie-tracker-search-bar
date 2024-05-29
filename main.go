@@ -11,13 +11,13 @@ import (
 func main() {
 	http.HandleFunc("/", never.HandleRequest)
 	http.HandleFunc("/artist", never.HandleRequest2)
-	fmt.Println("go to -->  http://localhost:5500/ ")
+	fmt.Println("go to -->  http://localhost:8080/ ")
 	http.Handle("/templates/", http.StripPrefix("/templates/", http.FileServer(http.Dir("templates/"))))
 	http.Handle("/HTML/", http.StripPrefix("/HTML/", http.FileServer(http.Dir("HTML/"))))
-	log.Fatal(http.ListenAndServe(":5500", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 	
 
-	if err := http.ListenAndServe(":5500", nil); err != nil {
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }

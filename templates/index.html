@@ -8,15 +8,16 @@
 </head>
 <body>
   <br>
-  <form method="GET" action="/">
-    <input type="text" name="query" list="suggestions" placeholder="Search...">
-    <datalist id="suggestions">
-      {{range .Suggestions}}
-        <option value="{{.}}"></option>
-      {{end}}
-    </datalist>
-    <input type="submit" value="Search">
+  <form method="GET">
+      <input type="text" id="search" name="query" list="suggestions" placeholder="Search for an artist...">
+      <datalist id="suggestions">
+          {{range .Suggestions}}
+          <option value="{{.}}"></option>
+          {{end}}
+      </datalist>
+      <button type="submit">Search</button>
   </form>
+
   <div class="grid-container">
     {{range .Artists}}
     <div class="artist-card">
