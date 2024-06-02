@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type HomePageData struct {
@@ -115,27 +116,119 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func containsQuery(artist Artist, query string) bool {
-	if strings.Contains(strings.ToLower(artist.Name), query) {
+	// Convert the query to lowercase
+	queryLower := strings.ToLower(query)
+
+	// Check if the query exactly matches the artist's name
+	if strings.Contains(strings.ToLower(artist.Name), queryLower) {
 		return true
 	}
+
+	// Check if half the letters in the query match the artist's name
+	if matchesHalf(artist.Name, queryLower) {
+		return true
+	}
+
+	// Check if the query exactly matches any of the artist's members
 	for _, member := range artist.Members {
-		if strings.Contains(strings.ToLower(member), query) {
+		if strings.Contains(strings.ToLower(member), queryLower) {
 			return true
 		}
 	}
-	if strings.Contains(strings.ToLower(strconv.Itoa(artist.CreationDate)), query) {
+
+	// Check if half the letters in the query match any of the artist's members
+	for _, member := range artist.Members {
+		if matchesHalf(member, queryLower) {
+			return true
+		}
+	}
+
+	// Convert the artist's creation date to a string in the desired format
+	creationDateStr := time.Date(artist.CreationDate/10000, time.Month(artist.CreationDate/100%100), artist.CreationDate%100, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
+
+	// Check if the query exactly matches the artist's creation date
+	if strings.Contains(strings.ToLower(creationDateStr), queryLower) {
 		return true
 	}
-	if strings.Contains(strings.ToLower(artist.FirstAlbum), query) {
+
+	// Check if half the letters in the query match the artist's creation date
+	if matchesHalf(creationDateStr, queryLower) {
 		return true
 	}
-	if strings.Contains(strings.ToLower(artist.Locations), query) {
+
+	// Check if the query exactly matches the artist's first album
+	if strings.Contains(strings.ToLower(artist.FirstAlbum), queryLower) {
 		return true
 	}
-	if strings.Contains(strings.ToLower(artist.ConcertDates), query) {
+
+	// Check if half the letters in the query match the artist's first album
+	if matchesHalf(artist.FirstAlbum, queryLower) {
 		return true
 	}
+
+	// Check if the query exactly matches the artist's locations
+	if strings.Contains(strings.ToLower(artist.Locations), queryLower) {
+		return true
+	}
+
+	// Check if half the letters in the query match the artist's locations
+	if matchesHalf(artist.Locations, queryLower) {
+		return true
+	}
+
+	// Check if the query exactly matches the artist's concert dates
+	if strings.Contains(strings.ToLower(artist.ConcertDates), queryLower) {
+		return true
+	}
+
+	// Check if half the letters in the query match the artist's concert dates
+	if matchesHalf(artist.ConcertDates, queryLower) {
+		return true
+	}
+
 	return false
+}
+
+func matchesHalf(str, query string) bool {
+	// Count the number of matching characters
+	matchCount := 0
+	for i := range query {
+		if i < len(str) && str[i] == query[i] {
+			matchCount++
+		}
+	}
+
+	// Check if half the letters in the query match the string
+	return float64(matchCount) >= float64(len(query))/2
+}
+
+func getArtistWithInfo(artistID int, w http.ResponseWriter, r *http.Request) ArtistWithInfo {
+	// Fetch the artist's information from the API
+	resp, err := http.Get("https://groupietrackers.herokuapp.com/api/artists/" + strconv.Itoa(artistID))
+	if err != nil {
+		HandleInternalError(w, r)
+		return ArtistWithInfo{}
+	}
+	defer resp.Body.Close()
+
+	var artist Artist
+	err = json.NewDecoder(resp.Body).Decode(&artist)
+	if err != nil {
+		HandleInternalError(w, r)
+		return ArtistWithInfo{}
+	}
+
+	// Fetch the artist's locations, dates, and relations
+	location := getLocation(artistID, w, r)
+	date := getDates(artistID, w, r)
+	relation := getRelation(artistID, w, r)
+
+	return ArtistWithInfo{
+		Artist:    artist,
+		Locations: location.LocationS,
+		Dates:     date.ConcertDates,
+		Relations: relation.DatesLocations,
+	}
 }
 
 func HandleRequest2(w http.ResponseWriter, r *http.Request) {
@@ -145,56 +238,21 @@ func HandleRequest2(w http.ResponseWriter, r *http.Request) {
 	// Convert the artistID to an integer
 	id, err := strconv.Atoi(artistID)
 	if err != nil {
-		HandleNotFound(w, r)
-		return
-	}
-
-	// Check if the ID is greater than 52
-	if id > 52 || id <= 0 {
-		HandleNotFound(w, r)
-		return
-	}
-
-	// Fetch the artist's detailed information using the artist ID
-	resp, err := http.Get("https://groupietrackers.herokuapp.com/api/artists/" + artistID)
-	if err != nil {
 		HandleInternalError(w, r)
 		return
 	}
-	defer resp.Body.Close()
 
-	// Decode the artist's detailed information
-	var artist Artist
-	err = json.NewDecoder(resp.Body).Decode(&artist)
-	if err != nil {
-		http.Error(w, "Failed to decode artist data", http.StatusBadGateway)
-		return
-	}
+	// Fetch the artist's information
+	artistInfo := getArtistWithInfo(id, w, r)
 
-	// Get the location information
-	location := getLocation(artist.ID, w, r)
-	// Get the relation information
-	relation := getRelation(artist.ID, w, r)
-	// Get the relation information
-	concertDate := getDates(artist.ID, w, r)
-
-	// Create a new instance of ArtistWithInfo
-	artistWithInfo := ArtistWithInfo{
-		Artist:    artist,
-		Locations: location.LocationS,
-		Dates:     concertDate.ConcertDates,
-		Relations: relation.DatesLocations,
-	}
-
-	// Load the info.html template
+	// Render the artist's information in the template
 	tmpl, err := template.ParseFiles("templates/info.html")
 	if err != nil {
 		HandleInternalError(w, r)
 		return
 	}
 
-	// Execute the template with the artist's detailed information
-	err = tmpl.Execute(w, artistWithInfo)
+	err = tmpl.Execute(w, artistInfo)
 	if err != nil {
 		HandleInternalError(w, r)
 		return
