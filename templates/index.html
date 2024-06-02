@@ -9,13 +9,14 @@
 <body>
   <br>
   <form method="GET">
-      <input type="text" id="search" name="query" list="suggestions" placeholder="Search for an artist...">
+    
+      <input class="input" type="text" id="search" name="query" list="suggestions" placeholder="Search for an artist...">
       <datalist id="suggestions">
           {{range .Suggestions}}
           <option value="{{.}}"></option>
           {{end}}
       </datalist>
-      <button type="submit">Search</button>
+      <button type="submit"><span>Search</span></button>
   </form>
 
   <div class="grid-container">
