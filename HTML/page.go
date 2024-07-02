@@ -10,7 +10,7 @@ import (
 )
 
 type HomePageData struct {
-	Artists     []Artist
+	Artists     []ArtistWithInfo
 	Suggestions []string
 }
 
@@ -70,19 +70,22 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filteredArtists []Artist
+	var artistWithInfo []ArtistWithInfo
+	var filteredArtists []ArtistWithInfo
 	var suggestions []string
 	exactMatches := []string{}
 	partialMatches := []string{}
 	if query != "" {
 		query = strings.ToLower(query)
-		for _, artist := range artists {
-			if containsQuery(artist, query) {
-				filteredArtists = append(filteredArtists, artist)
-				if strings.EqualFold(artist.Name, query) {
-					exactMatches = append(exactMatches, artist.Name)
-				} else {
-					partialMatches = append(partialMatches, artist.Name)
+		if len(artistWithInfo) > 0 {
+			for _, artist := range artistWithInfo {
+				if containsQuery(artist, query) {
+					filteredArtists = append(filteredArtists, artist)
+					if strings.EqualFold(artist.Name, query) {
+						exactMatches = append(exactMatches, artist.Name)
+					} else {
+						partialMatches = append(partialMatches, artist.Name)
+					}
 				}
 			}
 		}
@@ -91,7 +94,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 			suggestions = suggestions[:10]
 		}
 	} else {
-		filteredArtists = artists
+		filteredArtists = artistWithInfo
 		for _, artist := range artists {
 			suggestions = append(suggestions, artist.Name)
 		}
@@ -115,7 +118,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func containsQuery(artist Artist, query string) bool {
+func containsQuery(artist ArtistWithInfo, query string) bool {
 	// Convert the query to lowercase
 	queryLower := strings.ToLower(query)
 
@@ -166,13 +169,11 @@ func containsQuery(artist Artist, query string) bool {
 		return true
 	}
 
-	// Check if the query exactly matches the artist's locations
-	if strings.Contains(strings.ToLower(artist.Locations), queryLower) {
+	locationsStr := strings.Join(artist.Locations, " ")
+	if strings.Contains(strings.ToLower(locationsStr), queryLower) {
 		return true
 	}
-
-	// Check if half the letters in the query match the artist's locations
-	if matchesHalf(artist.Locations, queryLower) {
+	if matchesHalf(locationsStr, queryLower) {
 		return true
 	}
 
